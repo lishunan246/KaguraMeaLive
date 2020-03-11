@@ -1,0 +1,12 @@
+[Unit]
+Description=KaguraMeaLive Bot backend
+AssertPathExists=/srv/KaguraMeaLive
+
+[Service]
+Type=simple
+Environment=FLASK_APP=app.py
+WorkingDirectory=/srv/KaguraMeaLive
+ExecStart=/usr/local/bin/flask run --port 5010
+
+[Install]
+WantedBy=multi-user.target
