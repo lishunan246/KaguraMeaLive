@@ -2,3 +2,4 @@ sqlalchemy
 click
 flask
 mysqlclient
+Flask-SQLAlchemy
