@@ -5,14 +5,13 @@ from flask.cli import with_appcontext
 
 from KaguraMeaLive import db
 
+default_collation = 'utf8mb4_unicode_ci'
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
 
-    def __repr__(self):
-        return '<User %r>' % self.username
+class Channel(db.Model):
+    __table_args__ = {'mysql_charset': 'utf8mb4', 'mysql_collate': default_collation}
+    id = db.Column(db.String(50, collation=default_collation), primary_key=True)
+    name = db.Column(db.String(50, collation=default_collation), nullable=False)
 
 
 def init_db():

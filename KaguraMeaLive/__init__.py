@@ -10,6 +10,7 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_mapping(
     SECRET_KEY='dev',
+    SQLALCHEMY_TRACK_MODIFICATIONS=False
 )
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("ENGINE_URL")
 
