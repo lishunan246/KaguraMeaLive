@@ -4,7 +4,7 @@ AssertPathExists=/srv/KaguraMeaLive
 
 [Service]
 Type=simple
-Environment=FLASK_APP=app.py
+Environment=FLASK_APP=KaguraMeaLive
 WorkingDirectory=/srv/KaguraMeaLive
 ExecStart=/usr/local/bin/flask run --port 5010
 
