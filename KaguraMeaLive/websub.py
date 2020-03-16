@@ -93,12 +93,12 @@ def handle_notification(n: str):
 @app.route(f'/WebSub/{app.config["WEBSUB_TOKEN"]}', methods=['POST'])
 def handle_message():
     data = request.get_data().decode("utf-8")
-    app.logger.info(f'{data}')
+    app.logger.debug(f'{data}')
 
     n = Notification(content=data, last_update=datetime.now())
     db.session.add(n)
     db.session.commit()
 
     e = handle_notification(data)
-    app.logger.error(e)
+    app.logger.info(e)
     return ""
