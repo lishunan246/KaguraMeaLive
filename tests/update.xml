@@ -1,15 +1,21 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<feed xmlns:yt="http://www.youtube.com/xml/schemas/2015" xmlns="http://www.w3.org/2005/Atom"><link rel="hub" href="https://pubsubhubbub.appspot.com"/><link rel="self" href="https://www.youtube.com/xml/feeds/videos.xml?channel_id=UCWCc8t
-O-uUl_7SJXIKJACMw"/><title>YouTube video feed</title><updated>2020-03-16T10:18:20.200173322+00:00</updated><entry>
-  <id>yt:video:27PaMnDrxZE</id>
-  <yt:videoId>27PaMnDrxZE</yt:videoId>
-  <yt:channelId>UCWCc8tO-uUl_7SJXIKJACMw</yt:channelId>
-  <title>【初コラボ】パワ〇ラの現場！？！？後輩がデビュー1日で引退！？！？【神楽めあ/如月こより】</title>
-  <link rel="alternate" href="https://www.youtube.com/watch?v=27PaMnDrxZE"/>
-  <author>
-   <name>神楽めあ / KaguraMea</name>
-   <uri>https://www.youtube.com/channel/UCWCc8tO-uUl_7SJXIKJACMw</uri>
-  </author>
-  <published>2020-03-15T14:54:30+00:00</published>
-  <updated>2020-03-16T10:18:20.200173322+00:00</updated>
- </entry></feed>
+<feed xmlns:yt="http://www.youtube.com/xml/schemas/2015" xmlns="http://www.w3.org/2005/Atom">
+    <link rel="hub" href="https://pubsubhubbub.appspot.com"/>
+    <link rel="self" href="https://www.youtube.com/xml/feeds/videos.xml?channel_id=UCWCc8t
+O-uUl_7SJXIKJACMw"/>
+    <title>YouTube video feed</title>
+    <updated>2020-03-16T10:18:20.200173322+00:00</updated>
+    <entry>
+        <id>yt:video:27PaMnDrxZE</id>
+        <yt:videoId>27PaMnDrxZE</yt:videoId>
+        <yt:channelId>UCWCc8tO-uUl_7SJXIKJACMw</yt:channelId>
+        <title>【初コラボ】パワ〇ラの現場！？！？後輩がデビュー1日で引退！？！？【神楽めあ/如月こより】</title>
+        <link rel="alternate" href="https://www.youtube.com/watch?v=27PaMnDrxZE"/>
+        <author>
+            <name>神楽めあ / KaguraMea</name>
+            <uri>https://www.youtube.com/channel/UCWCc8tO-uUl_7SJXIKJACMw</uri>
+        </author>
+        <published>2020-03-15T14:54:30+00:00</published>
+        <updated>2020-03-16T10:18:20.200173322+00:00</updated>
+    </entry>
+</feed>
