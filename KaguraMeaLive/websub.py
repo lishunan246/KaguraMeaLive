@@ -1,10 +1,11 @@
 # coding:utf-8
+
 from datetime import datetime
 
 from flask import request
-from sqlalchemy import update, insert
+from sqlalchemy import update
 
-from KaguraMeaLive import app
+from KaguraMeaLive import app, db
 from .schema import Channel, Notification
 
 
@@ -32,8 +33,11 @@ def handle_notification(n: str):
 @app.route(f'/WebSub/{app.config["WEBSUB_TOKEN"]}', methods=['POST'])
 def handle_message():
     data = request.get_data().decode("utf-8")
+    app.logger.info(f'{data}')
 
-    insert(Notification).values(content=data)
+    n = Notification(content=data, last_update=datetime.now())
+    db.session.add(n)
+    db.session.commit()
 
     handle_notification(data)
-    return
+    return ""

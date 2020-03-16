@@ -4,3 +4,4 @@ click
 flask
 mysqlclient
 Flask-SQLAlchemy
+pytest
