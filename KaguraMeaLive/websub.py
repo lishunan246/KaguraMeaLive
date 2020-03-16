@@ -2,10 +2,10 @@
 from datetime import datetime
 
 from flask import request
-from sqlalchemy import update
+from sqlalchemy import update, insert
 
-from KaguraMeaLive import app, db
-from .schema import Channel
+from KaguraMeaLive import app
+from .schema import Channel, Notification
 
 
 @app.route(f'/WebSub/{app.config["WEBSUB_TOKEN"]}', methods=['GET'])
@@ -25,9 +25,15 @@ def handle_challenge():
     return challenge
 
 
+def handle_notification(n: str):
+    pass
+
+
 @app.route(f'/WebSub/{app.config["WEBSUB_TOKEN"]}', methods=['POST'])
 def handle_message():
-    a = Channel(name="sdf", id="sdfd")
-    db.session.add(a)
-    db.session.commit()
-    return 's'
+    data = request.get_data().decode("utf-8")
+
+    insert(Notification).values(content=data)
+
+    handle_notification(data)
+    return

@@ -40,7 +40,7 @@ class Notification(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)  # Auto-increment should be default
     content = db.Column(db.Text(collation=default_collation), nullable=False)
-    last_update = db.Column(db.TIMESTAMP(timezone=True))
+    last_update = db.Column(db.TIMESTAMP(timezone=True), nullable=False)
 
 
 def init_db():
