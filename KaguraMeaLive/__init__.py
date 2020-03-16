@@ -35,7 +35,7 @@ def tear_down(e=None):
 
 
 from .schema import init_db_command
-from .websub import websub
+from .websub import handle_challenge, handle_message
 
 app.teardown_appcontext(tear_down)
 app.cli.add_command(init_db_command)
