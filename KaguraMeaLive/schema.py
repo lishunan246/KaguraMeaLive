@@ -15,6 +15,7 @@ class Channel(db.Model):
     subscribe = db.Column(db.Boolean, nullable=False, default=True)
     last_subscribe = db.Column(db.TIMESTAMP(timezone=True))
     topic_url = db.Column(db.String(150, collation=default_collation), nullable=False, index=True)
+    channel_url = db.Column(db.String(150, collation=default_collation), nullable=False)
 
 
 class Video(db.Model):
@@ -27,6 +28,7 @@ class Video(db.Model):
     publish_time = db.Column(db.TIMESTAMP(timezone=True))
     last_update = db.Column(db.TIMESTAMP(timezone=True))
     deleted = db.Column(db.Boolean, nullable=False, default=False)
+    video_url = db.Column(db.String(150, collation=default_collation), nullable=False)
 
     is_livestream = db.Column(db.Boolean, nullable=True, default=False)
     actual_start_time = db.Column(db.TIMESTAMP(timezone=True))
@@ -49,7 +51,12 @@ def init_db():
     channel_id = 'UCWCc8tO-uUl_7SJXIKJACMw'
     topic = f"https://www.youtube.com/xml/feeds/videos.xml?channel_id={channel_id}",
 
-    a = Channel(id=channel_id, name="神楽めあ / KaguraMea", topic_url=topic)
+    a = Channel(
+        id=channel_id,
+        name="神楽めあ / KaguraMea",
+        topic_url=topic,
+        channel_url="https://www.youtube.com/channel/UCWCc8tO-uUl_7SJXIKJACMw"
+    )
 
     db.session.merge(a)
     db.session.commit()
