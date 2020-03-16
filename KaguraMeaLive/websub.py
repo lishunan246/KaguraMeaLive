@@ -2,8 +2,10 @@
 
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime
 
+import pytz
+from dateutil.parser import parse
 from flask import request
 from sqlalchemy import update
 
@@ -28,8 +30,10 @@ def handle_challenge():
     return challenge
 
 
-def rfc3339toEpoch(rfc3999: str) -> datetime:
-    return datetime.strptime(rfc3999[:19], '%Y-%m-%dT%H:%M:%S') + timedelta(hours=8)
+def rfc3339_to_datetime(rfc3999: str) -> datetime:
+    shanghai = pytz.timezone('Asia/Shanghai')
+
+    return parse(rfc3999).astimezone(shanghai)
 
 
 @dataclass
@@ -49,7 +53,7 @@ class VideoEvent:
         if self.action == "delete":
             return f"{self.channel_name} deleted a video: https://www.youtube.com/watch?v={self.video_id} @{self.delete_time}"
         elif self.action == "update":
-            return f"{self.channel_name} updated a video '{self.title}': https://www.youtube.com/watch?v={self.video_id} publish@{self.publish_time}, update@{self.update_time}"
+            return f"{self.channel_name} updated a video '{self.title}': https://www.youtube.com/watch?v={self.video_id} publish @{self.publish_time}, update @{self.update_time}"
         else:
             return super().__str__()
 
@@ -63,8 +67,8 @@ def handle_notification(n: str):
         deleted_entry = tree[-1]
         e.video_id = deleted_entry.attrib['ref'].split(':')[-1]
         e.video_url = f"https://www.youtube.com/watch?v={e.video_id}"
-        ts = deleted_entry.attrib['when'][:19]
-        e.delete_time = rfc3339toEpoch(ts)
+        ts = deleted_entry.attrib['when']
+        e.delete_time = rfc3339_to_datetime(ts)
         by = deleted_entry[-1]
         e.channel_name = by[0].text
         e.channel_url = by[1].text
@@ -81,8 +85,8 @@ def handle_notification(n: str):
         author = deleted_entry[5]
         e.channel_name = author[0].text
         e.channel_url = author[1].text
-        e.publish_time = rfc3339toEpoch(deleted_entry[6].text[:19])
-        e.update_time = rfc3339toEpoch(deleted_entry[7].text[:19])
+        e.publish_time = rfc3339_to_datetime(deleted_entry[6].text)
+        e.update_time = rfc3339_to_datetime(deleted_entry[7].text)
     return e
 
 
@@ -95,5 +99,6 @@ def handle_message():
     db.session.add(n)
     db.session.commit()
 
-    handle_notification(data)
+    e = handle_notification(data)
+    app.logger.error(e)
     return ""

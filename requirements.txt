@@ -1,3 +1,4 @@
+pytz
 requests
 sqlalchemy
 click
@@ -5,3 +6,4 @@ flask
 mysqlclient
 Flask-SQLAlchemy
 pytest
+python-dateutil
