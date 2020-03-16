@@ -8,7 +8,7 @@ from KaguraMeaLive import app, db
 from .schema import Channel
 
 
-@app.route('/WebSub', methods=['GET'])
+@app.route(f'/WebSub/{app.config["WEBSUB_TOKEN"]}', methods=['GET'])
 def handle_challenge():
     mode = request.args.get('hub.mode', "")
     challenge = request.args.get('hub.challenge', "")
@@ -25,7 +25,7 @@ def handle_challenge():
     return challenge
 
 
-@app.route('/WebSub', methods=['POST'])
+@app.route(f'/WebSub/{app.config["WEBSUB_TOKEN"]}', methods=['POST'])
 def handle_message():
     a = Channel(name="sdf", id="sdfd")
     db.session.add(a)

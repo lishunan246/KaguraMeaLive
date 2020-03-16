@@ -12,7 +12,9 @@ app.config.from_mapping(
     SECRET_KEY='dev',
     SQLALCHEMY_TRACK_MODIFICATIONS=False
 )
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("ENGINE_URL")
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("SQLALCHEMY_DATABASE_URI")
+app.config['BASE_URL'] = os.environ.get("BASE_URL")
+app.config['WEBSUB_TOKEN'] = os.environ.get("WEBSUB_TOKEN")
 
 app.config.from_pyfile(os.path.join(app.instance_path, 'config.py'), silent=True)
 
@@ -35,7 +37,11 @@ def tear_down(e=None):
 
 
 from .schema import init_db_command
+from .subscribe import subscribe_command
+
+app.cli.add_command(init_db_command)
+app.cli.add_command(subscribe_command)
+
 from .websub import handle_challenge, handle_message
 
 app.teardown_appcontext(tear_down)
-app.cli.add_command(init_db_command)
