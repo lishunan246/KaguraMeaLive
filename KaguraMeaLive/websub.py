@@ -1,5 +1,8 @@
+# coding:utf-8
+
 from KaguraMeaLive import app,db
 from .schema import Channel
+
 
 @app.route('/websub')
 def websub():
