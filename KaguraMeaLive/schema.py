@@ -2,6 +2,7 @@
 
 import click
 from flask.cli import with_appcontext
+from sqlalchemy.orm import relationship
 
 from KaguraMeaLive import db
 
@@ -17,12 +18,14 @@ class Channel(db.Model):
     topic_url = db.Column(db.String(150, collation=default_collation), nullable=False, index=True)
     channel_url = db.Column(db.String(150, collation=default_collation), nullable=False)
 
+    videos = relationship("Video", backref="channel")
+
 
 class Video(db.Model):
     __table_args__ = {'mysql_charset': 'utf8mb4', 'mysql_collate': default_collation}
 
     id = db.Column(db.String(50, collation=default_collation), primary_key=True)
-    channel_id = db.Column(db.String(50, collation=default_collation), index=True, nullable=False)
+    channel_id = db.Column(db.String(50, collation=default_collation), db.ForeignKey('channel.id'))
     title = db.Column(db.String(100, collation=default_collation), index=True)
     title_zh = db.Column(db.String(100, collation=default_collation))
     publish_time = db.Column(db.TIMESTAMP(timezone=True))
