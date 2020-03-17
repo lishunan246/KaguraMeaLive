@@ -4,13 +4,13 @@ import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from datetime import datetime
 
-import pytz
-from dateutil.parser import parse
 from flask import request
 from sqlalchemy import update
 
 from KaguraMeaLive import app, db
+from .LiveStreamDetails import LiveStreamingDetails
 from .schema import Channel, Notification, Video
+from .utils import rfc3339_to_datetime
 
 
 @app.route(f'/WebSub/{app.config["WEBSUB_TOKEN"]}', methods=['GET'])
@@ -30,24 +30,18 @@ def handle_challenge():
     return challenge
 
 
-def rfc3339_to_datetime(rfc3999: str) -> datetime:
-    shanghai = pytz.timezone('Asia/Shanghai')
-
-    return parse(rfc3999).astimezone(shanghai)
-
-
 @dataclass
 class NotificationData:
-    def __init__(self):
-        channel_name: str
-        channel_id: str
-        video_id: str
-        video_url: str
-        action: str
-        publish_time: datetime
-        delete_time: datetime
-        update_time: datetime
-        title: str
+    video_id: str
+    video_url: str
+    channel_name: str
+    channel_id: str
+    channel_url: str
+    title: str = ""
+    action: str = ""
+    publish_time: datetime = None
+    delete_time: datetime = None
+    update_time: datetime = None
 
     def __str__(self):
         if self.action == "delete":
@@ -60,33 +54,39 @@ class NotificationData:
 
 def handle_notification(n: str) -> NotificationData:
     tree = ET.fromstring(n)
-    e = NotificationData()
     if (len(tree)) == 1:
         # delete?
-        e.action = "delete"
         entry = tree[-1]
-        e.video_id = entry.attrib['ref'].split(':')[-1]
-        e.video_url = f"https://www.youtube.com/watch?v={e.video_id}"
-        ts = entry.attrib['when']
-        e.delete_time = rfc3339_to_datetime(ts)
         by = entry[-1]
-        e.channel_name = by[0].text
-        e.channel_url = by[1].text
-        e.channel_id = e.channel_url.split("/")[-1]
+        # noinspection PyTypeChecker
+        video_id: str = entry.attrib['ref'].split(':')[-1],
+
+        e = NotificationData(
+            video_id=video_id,
+            video_url=f"https://www.youtube.com/watch?v={video_id}",
+            channel_name=by[0].text,
+            channel_url=by[1].text,
+            channel_id=by[1].text.split("/")[-1],
+            action="delete",
+            delete_time=rfc3339_to_datetime(entry.attrib['when'])
+        )
+
     else:
         # update
-        e.action = "update"
-
         entry = tree[-1]
-        e.video_id = entry[1].text
-        e.channel_id = entry[2].text
-        e.title = entry[3].text
-        e.video_url = entry[4].attrib["href"]
         author = entry[5]
-        e.channel_name = author[0].text
-        e.channel_url = author[1].text
-        e.publish_time = rfc3339_to_datetime(entry[6].text)
-        e.update_time = rfc3339_to_datetime(entry[7].text)
+        e = NotificationData(
+            video_id=entry[1].text,
+            video_url=entry[4].attrib["href"],
+            channel_id=entry[2].text,
+            channel_name=author[0].text,
+            channel_url=author[1].text,
+            action="update",
+            publish_time=rfc3339_to_datetime(entry[6].text),
+            update_time=rfc3339_to_datetime(entry[7].text),
+            title=entry[3].text,
+        )
+
     return e
 
 
@@ -117,6 +117,8 @@ def handle_message():
         db.session.merge(c)
         db.session.merge(v)
         db.session.commit()
+        return ""
+
     elif e.action == "update":
         c = Channel(
             id=e.channel_id,
@@ -132,9 +134,21 @@ def handle_message():
             publish_time=e.publish_time,
             last_update=e.update_time,
         )
-        db.session.merge(c)
-        db.session.merge(v)
-        db.session.commit()
+        d = LiveStreamingDetails(video_id=e.video_id)
+        d.get(app.config['YOUTUBE_API_KEY'])
+
+        # 视频，非直播
+        if not d.isLiveStream:
+            app.logger.info(f'video {e.video_id} is not a livestream')
+            db.session.merge(c)
+            db.session.merge(v)
+            db.session.commit()
+            return ""
+
+        else:
+            db.session.query(Video).filter_by(video_id=e.video_id).all()
+
+        return ""
     else:
         app.logger.error(f'unknown event: {e}')
-    return ""
+        return ""
