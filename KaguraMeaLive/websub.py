@@ -117,5 +117,24 @@ def handle_message():
         db.session.merge(c)
         db.session.merge(v)
         db.session.commit()
-
+    elif e.action == "update":
+        c = Channel(
+            id=e.channel_id,
+            name=e.channel_name,
+            channel_url=e.channel_url,
+        )
+        v = Video(
+            id=e.video_id,
+            channel_id=e.channel_id,
+            deleted=False,
+            video_url=e.video_url,
+            title=e.title,
+            publish_time=e.publish_time,
+            last_update=e.update_time,
+        )
+        db.session.merge(c)
+        db.session.merge(v)
+        db.session.commit()
+    else:
+        app.logger.error(f'unknown event: {e}')
     return ""
