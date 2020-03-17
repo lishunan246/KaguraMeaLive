@@ -42,6 +42,7 @@ class NotificationData:
     publish_time: datetime = None
     delete_time: datetime = None
     update_time: datetime = None
+    livestreaming_details: LiveStreamingDetails = None
 
     def __str__(self):
         if self.action == "delete":
@@ -146,9 +147,36 @@ def handle_message():
             return ""
 
         else:
-            db.session.query(Video).filter_by(video_id=e.video_id).all()
+            e.livestreaming_details = d
+            v.is_livestream = True
+            v.actual_start_time = d.actualStartTime
+            v.active_livechat_id = d.activeLiveChatId
+            v.concurrent_viewers = d.concurrentViewers
+            v.scheduled_start_time = d.scheduledStartTime
 
-        return ""
+            l = db.session.query(Video).filter_by(video_id=e.video_id).all()
+            # 直播信息更新
+            if l:
+                app.logger.info('update previous livestreaming')
+                db.session.merge(c)
+                db.session.merge(v)
+                db.session.commit()
+                # todo: alert(e)
+                return ""
+            else:
+                lt = db.session.query(Video).filter_by(title=e.title).all()
+                # 还没改title， 先不管
+                if lt:
+                    app.logger.info('title seen before, ignored')
+                    return ""
+                # 改了title，需要alert
+                else:
+                    app.logger.info('add new livestreaming')
+                    db.session.merge(c)
+                    db.session.merge(v)
+                    db.session.commit()
+                    # todo: alert(e)
+                    return ""
     else:
         app.logger.error(f'unknown event: {e}')
         return ""
