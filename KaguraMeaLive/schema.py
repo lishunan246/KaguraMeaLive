@@ -8,6 +8,13 @@ from KaguraMeaLive import db
 
 default_collation = 'utf8mb4_unicode_ci'
 
+association_table = db.Table(
+    'association',
+    db.Model.metadata,
+    db.Column('channel_id', db.String(50, collation=default_collation), db.ForeignKey('channel.id')),
+    db.Column('chat_id', db.String(50, collation=default_collation), db.ForeignKey('chat.id'))
+)
+
 
 class Channel(db.Model):
     __table_args__ = {'mysql_charset': 'utf8mb4', 'mysql_collate': default_collation}
@@ -19,6 +26,12 @@ class Channel(db.Model):
     channel_url = db.Column(db.String(150, collation=default_collation), nullable=False)
 
     videos = relationship("Video", backref="channel")
+    chats = relationship("Chat", secondary=association_table, backref="channels")
+
+
+class Chat(db.Model):
+    __table_args__ = {'mysql_charset': 'utf8mb4', 'mysql_collate': default_collation}
+    id = db.Column(db.String(50, collation=default_collation), primary_key=True)
 
 
 class Video(db.Model):
@@ -54,14 +67,18 @@ def init_db():
     channel_id = 'UCWCc8tO-uUl_7SJXIKJACMw'
     topic = f"https://www.youtube.com/xml/feeds/videos.xml?channel_id={channel_id}",
 
-    a = Channel(
+    channel = Channel(
         id=channel_id,
         name="神楽めあ / KaguraMea",
         topic_url=topic,
         channel_url="https://www.youtube.com/channel/UCWCc8tO-uUl_7SJXIKJACMw"
     )
 
-    db.session.merge(a)
+    chat = Chat(id='@measuki_test')
+    channel.chats.append(chat)
+    db.session.merge(channel)
+    db.session.merge(chat)
+
     db.session.commit()
 
 
