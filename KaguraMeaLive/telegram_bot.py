@@ -16,17 +16,20 @@ class TelegramBot:
         text = n.get_message_text()
 
         for chat in channel.chats:
-            message = db.session.query(Message).filter_by(chat_id=chat.id).one_or_none()
-            if message:
-                if message.text != text:
-                    self.bot.editMessageText(text, chat.id, message.id, disable_web_page_preview=True, timeout=1)
-                    message.text = text
+            try:
+                message = db.session.query(Message).filter_by(chat_id=chat.id).one_or_none()
+                if message:
+                    if message.text != text:
+                        self.bot.editMessageText(text, chat.id, message.id, disable_web_page_preview=True, timeout=1)
+                        message.text = text
+                        db.session.merge(message)
+                        db.session.commit()
+                    else:
+                        app.logger.info("Message text is same.")
+                else:
+                    m = self.bot.send_message(chat.id, text, disable_web_page_preview=True, timeout=1)
+                    message = Message(text=text, message_id=m.message_id, chat_id=chat.id, video_id=n.video_id)
                     db.session.merge(message)
                     db.session.commit()
-                else:
-                    app.logger.info("Message text is same.")
-            else:
-                m = self.bot.send_message(chat.id, text, disable_web_page_preview=True, timeout=1)
-                message = Message(text=text, message_id=m.message_id, chat_id=chat.id, video_id=n.video_id)
-                db.session.merge(message)
-                db.session.commit()
+            except Exception as e:
+                app.logger.error(f'when alert: {e}')
