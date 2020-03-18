@@ -35,6 +35,8 @@ app.config['BASE_URL'] = os.environ.get("BASE_URL")
 app.config['WEBSUB_TOKEN'] = os.environ.get("WEBSUB_TOKEN")
 app.config['YOUTUBE_API_KEY'] = os.environ.get("YOUTUBE_API_KEY")
 app.config['TELEGRAM_BOT_TOKEN'] = os.environ.get("TELEGRAM_BOT_TOKEN")
+app.config['TRANSLATE_APPID'] = os.environ.get("TRANSLATE_APPID")
+app.config['TRANSLATE_SECRET'] = os.environ.get("TRANSLATE_SECRET")
 
 app.config.from_pyfile(os.path.join(app.instance_path, 'config.py'), silent=True)
 

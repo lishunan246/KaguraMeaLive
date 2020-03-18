@@ -14,6 +14,7 @@ class NotificationData:
     channel_id: str
     channel_url: str
     title: str = ""
+    title_zh: str = ""
     action: str = ""
     publish_time: datetime = None
     delete_time: datetime = None
@@ -36,4 +37,5 @@ class NotificationData:
         assert LiveStreamingDetails.isLiveStream
         return f"{self.channel_name}将于{self.livestreaming_details.scheduledStartTime}直播。\n" \
                f"标题：{self.title}\n" \
+               f"翻译：{self.title_zh}\n" \
                f"{self.video_url}\n"

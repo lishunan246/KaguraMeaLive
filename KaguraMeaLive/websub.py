@@ -10,6 +10,7 @@ from .LiveStreamDetails import LiveStreamingDetails
 from .NotificatonData import NotificationData
 from .schema import Channel, Notification, Video
 from .telegram_bot import TelegramBot
+from .translate import translate
 from .utils import rfc3339_to_datetime
 
 
@@ -59,6 +60,13 @@ def handle_notification(n: str) -> NotificationData:
         # update
         entry = tree[-1]
         author = entry[5]
+        title = entry[3].text
+        title_zh = ""
+        try:
+            title_zh = translate(title, app.config['TRANSLATE_APPID'], app.config['TRANSLATE_SECRET'])
+        except Exception as e:
+            app.logger.error(f'when translate: {e}')
+
         e = NotificationData(
             video_id=entry[1].text,
             video_url=entry[4].attrib["href"],
@@ -68,7 +76,8 @@ def handle_notification(n: str) -> NotificationData:
             action="update",
             publish_time=rfc3339_to_datetime(entry[6].text),
             update_time=rfc3339_to_datetime(entry[7].text),
-            title=entry[3].text,
+            title=title,
+            title_zh=title_zh,
         )
 
     return e
@@ -115,6 +124,7 @@ def handle_message():
             deleted=False,
             video_url=e.video_url,
             title=e.title,
+            title_zh=e.title_zh,
             publish_time=e.publish_time,
             last_update=e.update_time,
         )
