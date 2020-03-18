@@ -4,7 +4,7 @@ import click
 from flask.cli import with_appcontext
 from sqlalchemy.orm import relationship
 
-from KaguraMeaLive import db
+from KaguraMeaLive import app, db
 
 default_collation = 'utf8mb4_unicode_ci'
 
