@@ -149,7 +149,7 @@ def handle_message():
             v.concurrent_viewers = d.concurrentViewers
             v.scheduled_start_time = d.scheduledStartTime
 
-            video = db.session.query(Video).filter_by(video_id=e.video_id).one_or_none()
+            video = db.session.query(Video).filter_by(id=e.video_id).one_or_none()
             # 直播信息更新
             if video:
                 app.logger.info('update previous livestreaming')
