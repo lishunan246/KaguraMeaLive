@@ -9,7 +9,7 @@ from KaguraMeaLive import db
 default_collation = 'utf8mb4_unicode_ci'
 
 association_table = db.Table(
-    'association',
+    'channel_chat',
     db.Model.metadata,
     db.Column('channel_id', db.String(50, collation=default_collation), db.ForeignKey('channel.id')),
     db.Column('chat_id', db.String(50, collation=default_collation), db.ForeignKey('chat.id'))
@@ -33,12 +33,14 @@ class Chat(db.Model):
     __table_args__ = {'mysql_charset': 'utf8mb4', 'mysql_collate': default_collation}
     id = db.Column(db.String(50, collation=default_collation), primary_key=True)
 
+    messages = relationship("Message", backref="chat")
+
 
 class Video(db.Model):
     __table_args__ = {'mysql_charset': 'utf8mb4', 'mysql_collate': default_collation}
 
     id = db.Column(db.String(50, collation=default_collation), primary_key=True)
-    channel_id = db.Column(db.String(50, collation=default_collation), db.ForeignKey('channel.id'))
+    channel_id = db.Column(db.String(50, collation=default_collation), db.ForeignKey('channel.id'), nullable=False)
     title = db.Column(db.String(100, collation=default_collation), index=True)
     title_zh = db.Column(db.String(100, collation=default_collation))
     publish_time = db.Column(db.TIMESTAMP(timezone=True))
@@ -52,6 +54,8 @@ class Video(db.Model):
     concurrent_viewers = db.Column(db.Integer)
     active_livechat_id = db.Column(db.String(50, collation=default_collation), index=True)
 
+    messages = relationship("Message", backref="video")
+
 
 class Notification(db.Model):
     __table_args__ = {'mysql_charset': 'utf8mb4', 'mysql_collate': default_collation}
@@ -59,6 +63,15 @@ class Notification(db.Model):
     id = db.Column(db.Integer, primary_key=True)  # Auto-increment should be default
     content = db.Column(db.Text(collation=default_collation), nullable=False)
     last_update = db.Column(db.TIMESTAMP(timezone=True), nullable=False)
+
+
+class Message(db.Model):
+    __table_args__ = {'mysql_charset': 'utf8mb4', 'mysql_collate': default_collation}
+    id = db.Column(db.Integer, primary_key=True)  # Auto-increment should be default
+    text = db.Column(db.Text(collation=default_collation), nullable=False)
+    message_id = db.Column(db.Integer, index=True, nullable=False)
+    chat_id = db.Column(db.String(50, collation=default_collation), db.ForeignKey('chat.id'), nullable=False)
+    video_id = db.Column(db.String(50, collation=default_collation), db.ForeignKey('video.id'), nullable=False)
 
 
 def init_db():
