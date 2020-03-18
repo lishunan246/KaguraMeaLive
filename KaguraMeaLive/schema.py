@@ -11,6 +11,8 @@ default_collation = 'utf8mb4_unicode_ci'
 association_table = db.Table(
     'channel_chat',
     db.Model.metadata,
+    db.Column('id', db.Integer, primary_key=True),  # Auto-increment should be default
+
     db.Column('channel_id', db.String(50, collation=default_collation), db.ForeignKey('channel.id')),
     db.Column('chat_id', db.String(50, collation=default_collation), db.ForeignKey('chat.id'))
 )
