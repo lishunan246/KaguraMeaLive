@@ -4,9 +4,10 @@ AssertPathExists=/srv/KaguraMeaLive
 
 [Service]
 Type=simple
-Environment=FLASK_APP=KaguraMeaLive
+EnvironmentFile=/etc/default/KaguraMeaLive
 WorkingDirectory=/srv/KaguraMeaLive
 ExecStart=/usr/local/bin/flask run --port 5010
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
