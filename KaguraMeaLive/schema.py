@@ -89,7 +89,7 @@ def init_db():
         channel_url="https://www.youtube.com/channel/UCWCc8tO-uUl_7SJXIKJACMw"
     )
 
-    chat = Chat(id='@measuki_test')
+    chat = Chat(id=app.config['DEFAULT_CHAT'])
     channel.chats.append(chat)
     db.session.merge(channel)
     db.session.merge(chat)

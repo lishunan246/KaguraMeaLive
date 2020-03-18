@@ -80,6 +80,8 @@ app.config['YOUTUBE_API_KEY'] = os.environ.get("YOUTUBE_API_KEY")
 app.config['TELEGRAM_BOT_TOKEN'] = os.environ.get("TELEGRAM_BOT_TOKEN")
 app.config['TRANSLATE_APPID'] = os.environ.get("TRANSLATE_APPID")
 app.config['TRANSLATE_SECRET'] = os.environ.get("TRANSLATE_SECRET")
+app.config['DEFAULT_CHAT'] = os.environ.get("DEFAULT_CHAT")
+
 
 app.config.from_pyfile(os.path.join(app.instance_path, 'config.py'), silent=True)
 
