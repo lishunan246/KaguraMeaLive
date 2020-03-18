@@ -1,10 +1,9 @@
-# coding:utf-8
+# coding: utf-8
 
 import xml.etree.ElementTree as ET
 from datetime import datetime
 
 from flask import request
-from sqlalchemy import update
 
 from KaguraMeaLive import app, db
 from .LiveStreamDetails import LiveStreamingDetails
@@ -20,14 +19,20 @@ def handle_challenge():
     challenge = request.args.get('hub.challenge', "")
     topic = request.args.get('hub.topic', "")
     # lease_seconds = request.args.get('hub.lease_seconds', "")
-
+    channel = db.session.query(Channel).filter_by(topic_url=topic).one_or_none
+    if not channel:
+        app.logger.error(f'unknown channel topic: {topic}')
+        return ""
     if mode == 'subscribe':
-        update(Channel).where(Channel.topic_url == topic).values(last_subscribe=datetime.utcnow, subcribe=True)
+        channel.subscribe = True
+        channel.last_subscribe = datetime.now()
     elif mode == 'unsubscribe':
-        update(Channel).where(Channel.topic_url == topic).values(subcribe=False)
+        channel.subscribe = False
     else:
         app.logger.error(f'Invalid mode: {mode}')
-
+        return ""
+    db.session.merge(channel)
+    db.session.commit()
     return challenge
 
 
@@ -132,9 +137,9 @@ def handle_message():
             v.concurrent_viewers = d.concurrentViewers
             v.scheduled_start_time = d.scheduledStartTime
 
-            videos = db.session.query(Video).filter_by(video_id=e.video_id).all()
+            video = db.session.query(Video).filter_by(video_id=e.video_id).one_or_none()
             # 直播信息更新
-            if videos:
+            if video:
                 app.logger.info('update previous livestreaming')
                 db.session.merge(c)
                 db.session.merge(v)
@@ -144,9 +149,9 @@ def handle_message():
                 bot.alert(e)
                 return ""
             else:
-                lt = db.session.query(Video).filter_by(title=e.title).all()
+                video_with_same_title = db.session.query(Video).filter_by(title=e.title).one_or_none()
                 # 还没改title， 先不管
-                if lt:
+                if video_with_same_title:
                     app.logger.info('title seen before, ignored')
                     return ""
                 # 改了title，需要alert
