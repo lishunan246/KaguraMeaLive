@@ -1,12 +1,55 @@
 # coding: utf-8
 
 
+import logging
 import os
+from logging.config import dictConfig
+from logging.handlers import SMTPHandler
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
-from logging.config import dictConfig
+
+def emit(self, record):
+    """
+    Overwrite the logging.handlers.SMTPHandler.emit function with SMTP_SSL.
+    Emit a record.
+    Format the record and send it to the specified addressees.
+    """
+    try:
+        import smtplib
+        from email.utils import formatdate
+        port = self.mailport
+        if not port:
+            port = smtplib.SMTP_PORT
+        smtp = smtplib.SMTP_SSL(self.mailhost, port, 3)
+        msg = self.format(record)
+        msg = "From: %s\r\nTo: %s\r\nSubject: %s\r\nDate: %s\r\n\r\n%s" % (
+            self.fromaddr, ", ".join(self.toaddrs), self.getSubject(record), formatdate(), msg)
+        if self.username:
+            smtp.ehlo()
+            smtp.login(self.username, self.password)
+        smtp.sendmail(self.fromaddr, self.toaddrs, msg)
+        smtp.quit()
+    except (KeyboardInterrupt, SystemExit):
+        raise
+    except:
+        self.handleError(record)
+
+
+logging.handlers.SMTPHandler.emit = emit
+
+mail_handler = SMTPHandler(
+    mailhost=(os.environ.get("SMTP_HOST"), int(os.environ.get("SMTP_PORT"))),
+    credentials=(os.environ.get("SMTP_USERNAME"), os.environ.get("SMTP_PASSWORD")),
+    fromaddr=os.environ.get("FROM_ADDR"),
+    toaddrs=[os.environ.get("TO_ADDR")],
+    subject='KaguraMeaLive bot Error'
+)
+mail_handler.setLevel(logging.ERROR)
+mail_handler.setFormatter(logging.Formatter(
+    '[%(asctime)s][%(levelname)s][%(module)s]%(message)s'
+))
 
 dictConfig({
     'version': 1,
@@ -40,6 +83,9 @@ app.config['TRANSLATE_SECRET'] = os.environ.get("TRANSLATE_SECRET")
 
 app.config.from_pyfile(os.path.join(app.instance_path, 'config.py'), silent=True)
 
+if not app.debug:
+    app.logger.addHandler(mail_handler)
+
 db = SQLAlchemy(app)
 # ensure the instance folder exists
 try:
@@ -67,3 +113,4 @@ app.cli.add_command(subscribe_command)
 from .websub import handle_challenge, handle_message
 
 app.teardown_appcontext(tear_down)
+app.logger.error("service start")

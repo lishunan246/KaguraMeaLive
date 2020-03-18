@@ -11,7 +11,7 @@ def test_update():
         lines = "".join(f.readlines())
 
         logging.debug(lines)
-    r = requests.post(f'http://127.0.0.1:5000/WebSub/{os.environ.get("WEBSUB_TOKEN")}', data=lines.encode("utf-8"))
+    r = requests.post(f'http://127.0.0.1:5000/websub/{os.environ.get("WEBSUB_TOKEN")}', data=lines.encode("utf-8"))
     logging.info(r)
 
 
@@ -20,5 +20,5 @@ def test_delete():
         lines = "".join(f.readlines())
 
         logging.debug(lines)
-    r = requests.post(f'http://127.0.0.1:5000/WebSub/{os.environ.get("WEBSUB_TOKEN")}', data=lines.encode("utf-8"))
+    r = requests.post(f'http://127.0.0.1:5000/websub/{os.environ.get("WEBSUB_TOKEN")}', data=lines.encode("utf-8"))
     logging.info(r)
