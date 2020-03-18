@@ -1,7 +1,6 @@
 # coding:utf-8
 
 import xml.etree.ElementTree as ET
-from dataclasses import dataclass
 from datetime import datetime
 
 from flask import request
@@ -9,7 +8,9 @@ from sqlalchemy import update
 
 from KaguraMeaLive import app, db
 from .LiveStreamDetails import LiveStreamingDetails
+from .NotificatonData import NotificationData
 from .schema import Channel, Notification, Video
+from .telegram_bot import TelegramBot
 from .utils import rfc3339_to_datetime
 
 
@@ -28,29 +29,6 @@ def handle_challenge():
         app.logger.error(f'Invalid mode: {mode}')
 
     return challenge
-
-
-@dataclass
-class NotificationData:
-    video_id: str
-    video_url: str
-    channel_name: str
-    channel_id: str
-    channel_url: str
-    title: str = ""
-    action: str = ""
-    publish_time: datetime = None
-    delete_time: datetime = None
-    update_time: datetime = None
-    livestreaming_details: LiveStreamingDetails = None
-
-    def __str__(self):
-        if self.action == "delete":
-            return f"{self.channel_name} deleted a video: https://www.youtube.com/watch?v={self.video_id} @{self.delete_time}"
-        elif self.action == "update":
-            return f"{self.channel_name} updated a video '{self.title}': https://www.youtube.com/watch?v={self.video_id} publish @{self.publish_time}, update @{self.update_time}"
-        else:
-            return super().__str__()
 
 
 def handle_notification(n: str) -> NotificationData:
@@ -154,14 +132,16 @@ def handle_message():
             v.concurrent_viewers = d.concurrentViewers
             v.scheduled_start_time = d.scheduledStartTime
 
-            l = db.session.query(Video).filter_by(video_id=e.video_id).all()
+            videos = db.session.query(Video).filter_by(video_id=e.video_id).all()
             # 直播信息更新
-            if l:
+            if videos:
                 app.logger.info('update previous livestreaming')
                 db.session.merge(c)
                 db.session.merge(v)
                 db.session.commit()
-                # todo: alert(e)
+
+                bot = TelegramBot()
+                bot.alert(e)
                 return ""
             else:
                 lt = db.session.query(Video).filter_by(title=e.title).all()
@@ -175,7 +155,8 @@ def handle_message():
                     db.session.merge(c)
                     db.session.merge(v)
                     db.session.commit()
-                    # todo: alert(e)
+                    bot = TelegramBot()
+                    bot.alert(e)
                     return ""
     else:
         app.logger.error(f'unknown event: {e}')
