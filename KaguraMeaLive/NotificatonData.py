@@ -34,7 +34,7 @@ class NotificationData:
             return super().__str__()
 
     def get_message_text(self) -> str:
-        assert LiveStreamingDetails.isLiveStream
+        assert self.livestreaming_details.isLiveStream
         return f"{self.channel_name}将于{self.livestreaming_details.scheduledStartTime}直播。\n" \
                f"标题：{self.title}\n" \
                f"翻译：{self.title_zh}\n" \
