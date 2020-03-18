@@ -7,3 +7,4 @@ mysqlclient
 Flask-SQLAlchemy
 pytest
 python-dateutil
+python-telegram-bot

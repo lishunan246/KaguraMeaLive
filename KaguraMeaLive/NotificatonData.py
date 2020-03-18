@@ -22,8 +22,18 @@ class NotificationData:
 
     def __str__(self):
         if self.action == "delete":
-            return f"{self.channel_name} deleted a video: https://www.youtube.com/watch?v={self.video_id} @{self.delete_time}"
+            return f"{self.channel_name} deleted a video: " \
+                   f"https://www.youtube.com/watch?v={self.video_id} @{self.delete_time}"
         elif self.action == "update":
-            return f"{self.channel_name} updated a video '{self.title}': https://www.youtube.com/watch?v={self.video_id} publish @{self.publish_time}, update @{self.update_time}"
+            return f"{self.channel_name} updated a video '{self.title}': " \
+                   f"https://www.youtube.com/watch?v={self.video_id} " \
+                   f"publish @{self.publish_time}, " \
+                   f"update @{self.update_time}"
         else:
             return super().__str__()
+
+    def get_message_text(self) -> str:
+        assert LiveStreamingDetails.isLiveStream
+        return f"{self.channel_name}将于{self.livestreaming_details.scheduledStartTime}直播。\n" \
+               f"标题：{self.title}\n" \
+               f"{self.video_url}\n"
