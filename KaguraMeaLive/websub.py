@@ -14,7 +14,7 @@ from .translate import translate
 from .utils import rfc3339_to_datetime
 
 
-@app.route(f'/WebSub/{app.config["WEBSUB_TOKEN"]}', methods=['GET'])
+@app.route(f'/websub/{app.config["WEBSUB_TOKEN"]}', methods=['GET'])
 def handle_challenge():
     mode = request.args.get('hub.mode', "")
     challenge = request.args.get('hub.challenge', "")
@@ -83,7 +83,7 @@ def handle_notification(n: str) -> NotificationData:
     return e
 
 
-@app.route(f'/WebSub/{app.config["WEBSUB_TOKEN"]}', methods=['POST'])
+@app.route(f'/websub/{app.config["WEBSUB_TOKEN"]}', methods=['POST'])
 def handle_message():
     data = request.get_data().decode("utf-8")
     app.logger.debug(f'{data}')

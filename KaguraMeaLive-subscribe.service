@@ -1,0 +1,11 @@
+[Unit]
+Description=subscribe
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/flask subscribe
+EnvironmentFile=/etc/default/KaguraMeaLive
+WorkingDirectory=/srv/KaguraMeaLive
+
+[Install]
+WantedBy=multi-user.target
