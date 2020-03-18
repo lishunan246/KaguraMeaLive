@@ -22,7 +22,7 @@ def handle_challenge():
     topic = request.args.get('hub.topic', "")
     topic = unquote(topic)
     # lease_seconds = request.args.get('hub.lease_seconds', "")
-    channel = db.session.query(Channel).filter_by(topic_url=topic).one_or_none
+    channel = db.session.query(Channel).filter_by(topic_url=topic).one_or_none()
     if not channel:
         app.logger.error(f'unknown channel topic: {topic}')
         return ""
