@@ -140,7 +140,7 @@ def handle_message():
                 db.session.merge(v)
                 db.session.commit()
 
-                bot = TelegramBot()
+                bot = TelegramBot(app.config['TELEGRAM_BOT_TOKEN'])
                 bot.alert(e)
                 return ""
             else:
@@ -155,7 +155,7 @@ def handle_message():
                     db.session.merge(c)
                     db.session.merge(v)
                     db.session.commit()
-                    bot = TelegramBot()
+                    bot = TelegramBot(app.config['TELEGRAM_BOT_TOKEN'])
                     bot.alert(e)
                     return ""
     else:
