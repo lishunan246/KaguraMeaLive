@@ -2,6 +2,7 @@
 
 import xml.etree.ElementTree as ET
 from datetime import datetime
+from urllib.parse import unquote
 
 from flask import request
 
@@ -19,6 +20,7 @@ def handle_challenge():
     mode = request.args.get('hub.mode', "")
     challenge = request.args.get('hub.challenge', "")
     topic = request.args.get('hub.topic', "")
+    topic = unquote(topic)
     # lease_seconds = request.args.get('hub.lease_seconds', "")
     channel = db.session.query(Channel).filter_by(topic_url=topic).one_or_none
     if not channel:
