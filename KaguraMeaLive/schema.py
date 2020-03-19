@@ -54,7 +54,7 @@ class Video(db.Model):
     actual_start_time = db.Column(db.TIMESTAMP(timezone=True))
     scheduled_start_time = db.Column(db.TIMESTAMP(timezone=True))
     concurrent_viewers = db.Column(db.Integer)
-    active_livechat_id = db.Column(db.String(50, collation=default_collation), index=True)
+    active_livechat_id = db.Column(db.String(150, collation=default_collation), index=True)
 
     messages = relationship("Message", backref="video")
 
