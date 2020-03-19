@@ -17,7 +17,7 @@ class TelegramBot:
 
         for chat in channel.chats:
             try:
-                message = db.session.query(Message).filter_by(chat_id=chat.id).one_or_none()
+                message = db.session.query(Message).filter_by(chat_id=chat.id, video_id=n.video_id).one_or_none()
                 if message:
                     if message.text != text:
                         self.bot.editMessageText(text, chat.id, message.id, disable_web_page_preview=True, timeout=1)

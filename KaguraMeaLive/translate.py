@@ -19,7 +19,7 @@ def translate(q: str, appid: str, secret: str) -> str:
             "salt": salt,
             "sign": sign
         },
-        timeout=1.0
+        timeout=5.0
     )
     j = r.json()
     return j['trans_result'][0]['dst']

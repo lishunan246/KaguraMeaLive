@@ -35,7 +35,8 @@ class NotificationData:
 
     def get_message_text(self) -> str:
         assert self.livestreaming_details.isLiveStream
-        return f"{self.channel_name}将于{self.livestreaming_details.scheduledStartTime}直播。\n" \
+        return f"{self.channel_name}添加了新直播。\n" \
+               f"{self.video_url}\n" \
+               f"预定开始时间：{self.livestreaming_details.scheduledStartTime}\n" \
                f"标题：{self.title}\n" \
-               f"翻译：{self.title_zh}\n" \
-               f"{self.video_url}\n"
+               f"翻译：{self.title_zh}\n"
