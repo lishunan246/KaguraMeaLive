@@ -113,6 +113,7 @@ app.cli.add_command(init_db_command)
 app.cli.add_command(subscribe_command)
 
 from .websub import handle_challenge, handle_message
+from .telegram_bot_webhook import answer_telegram, answer_telegram_get
 
 app.teardown_appcontext(tear_down)
 app.logger.error("service start")
