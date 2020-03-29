@@ -4,7 +4,7 @@ import json
 
 from flask import request
 from telegram import Bot, Update
-from telegram.ext import CommandHandler
+from telegram.ext import CommandHandler, CallbackContext
 from telegram.ext import Dispatcher
 from telegram.ext import MessageHandler, Filters
 
@@ -13,43 +13,50 @@ from KaguraMeaLive import app
 b = Bot(app.config["TELEGRAM_BOT_TOKEN"])
 
 
-def start(bot, update):
+def start(update: Update, context: CallbackContext):
     app.logger.info(f'start: {update}')
+    bot = context.bot
     bot.send_message(chat_id=update.message.chat_id, text="欢迎。")
 
 
-def echo(bot, update):
+def echo(update: Update, context: CallbackContext):
     app.logger.info(f'echo: {update}')
+    bot = context.bot
     bot.send_message(chat_id=update.message.chat_id, text="这个我不懂。")
 
 
-def unknown(bot, update):
+def unknown(update: Update, context: CallbackContext):
     app.logger.info(f'unknown: {update}')
+    bot = context.bot
     bot.send_message(chat_id=update.message.chat_id, text="这个我不懂。")
 
 
-def enable(bot, update):
+def enable(update: Update, context: CallbackContext):
     app.logger.info(f'enable: {update}')
+    bot = context.bot
     bot.send_message(chat_id=update.message.chat_id, text="提醒已启用。")
 
 
-def disable(bot, update):
+def disable(update: Update, context: CallbackContext):
     app.logger.info(f'disable: {update}')
+    bot = context.bot
     bot.send_message(chat_id=update.message.chat_id, text="提醒已停用。")
 
 
-def status(bot, update):
+def status(update: Update, context: CallbackContext):
     app.logger.info(f'status: {update}')
+    bot = context.bot
     bot.send_message(chat_id=update.message.chat_id, text='提醒开启')
 
 
-def help_(bot, update):
+def help_(update: Update, context: CallbackContext):
     app.logger.info(f'help: {update}')
+    bot = context.bot
     bot.send_message(chat_id=update.message.chat_id, text="/enable 启用提醒\n/disable 关闭提醒\n /status 查看状态")
 
 
 def setup():
-    d = Dispatcher(b, None, workers=0)
+    d = Dispatcher(b, None, workers=0, use_context=True)
 
     start_handler = CommandHandler('start', start)
     d.add_handler(start_handler)

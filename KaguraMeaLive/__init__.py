@@ -116,4 +116,4 @@ from .websub import handle_challenge, handle_message
 from .telegram_bot_webhook import answer_telegram, answer_telegram_get
 
 app.teardown_appcontext(tear_down)
-app.logger.error("service start")
+app.logger.info("service start")
