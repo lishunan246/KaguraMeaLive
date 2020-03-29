@@ -81,6 +81,7 @@ def answer_telegram():
 
     update = Update.de_json(json.loads(data), b)
     dispatcher.process_update(update)
+    return ''
 
 
 @app.route(f'/telegram_bot/{app.config["TELEGRAM_BOT_TOKEN"]}', methods=['GET'])
