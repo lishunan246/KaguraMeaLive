@@ -93,22 +93,22 @@ class TelegramUser(db.Model):
 def init_db():
     db.create_all()
 
-    channel_id = 'UCWCc8tO-uUl_7SJXIKJACMw'
-    topic = f"https://www.youtube.com/xml/feeds/videos.xml?channel_id={channel_id}",
-
-    channel = Channel(
-        id=channel_id,
-        name="神楽めあ / KaguraMea",
-        topic_url=topic,
-        channel_url="https://www.youtube.com/channel/UCWCc8tO-uUl_7SJXIKJACMw"
-    )
-
-    chat = Chat(id=app.config['DEFAULT_CHAT'])
-    channel.chats.append(chat)
-    db.session.merge(channel)
-    db.session.merge(chat)
-
-    db.session.commit()
+    # channel_id = 'UCWCc8tO-uUl_7SJXIKJACMw'
+    # topic = f"https://www.youtube.com/xml/feeds/videos.xml?channel_id={channel_id}",
+    #
+    # channel = Channel(
+    #     id=channel_id,
+    #     name="神楽めあ / KaguraMea",
+    #     topic_url=topic,
+    #     channel_url="https://www.youtube.com/channel/UCWCc8tO-uUl_7SJXIKJACMw"
+    # )
+    #
+    # chat = Chat(id=app.config['DEFAULT_CHAT'])
+    # channel.chats.append(chat)
+    # db.session.merge(channel)
+    # db.session.merge(chat)
+    #
+    # db.session.commit()
 
 
 @click.command('init-db')
