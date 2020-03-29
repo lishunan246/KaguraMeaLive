@@ -39,17 +39,6 @@ def emit(self, record):
 
 logging.handlers.SMTPHandler.emit = emit
 
-mail_handler = SMTPHandler(
-    mailhost=(os.environ.get("SMTP_HOST"), int(os.environ.get("SMTP_PORT"))),
-    credentials=(os.environ.get("SMTP_USERNAME"), os.environ.get("SMTP_PASSWORD")),
-    fromaddr=os.environ.get("FROM_ADDR"),
-    toaddrs=[os.environ.get("TO_ADDR")],
-    subject='KaguraMeaLive bot Error'
-)
-mail_handler.setLevel(logging.ERROR)
-mail_handler.setFormatter(logging.Formatter(
-    '[%(asctime)s][%(levelname)s][%(module)s]%(message)s'
-))
 
 dictConfig({
     'version': 1,
@@ -86,7 +75,21 @@ app.config['DEFAULT_CHAT'] = os.environ.get("DEFAULT_CHAT")
 app.config.from_pyfile(os.path.join(app.instance_path, 'config.py'), silent=True)
 
 if not app.debug:
-    app.logger.addHandler(mail_handler)
+    try:
+        mail_handler = SMTPHandler(
+            mailhost=(os.environ.get("SMTP_HOST"), int(os.environ.get("SMTP_PORT"))),
+            credentials=(os.environ.get("SMTP_USERNAME"), os.environ.get("SMTP_PASSWORD")),
+            fromaddr=os.environ.get("FROM_ADDR"),
+            toaddrs=[os.environ.get("TO_ADDR")],
+            subject='KaguraMeaLive bot Error'
+        )
+        mail_handler.setLevel(logging.ERROR)
+        mail_handler.setFormatter(logging.Formatter(
+            '[%(asctime)s][%(levelname)s][%(module)s]%(message)s'
+        ))
+        app.logger.addHandler(mail_handler)
+    except Exception as e:
+        print(f'when set smtp: {e}')
 
 db = SQLAlchemy(app)
 # ensure the instance folder exists
