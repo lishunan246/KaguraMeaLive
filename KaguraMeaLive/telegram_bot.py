@@ -4,12 +4,22 @@ from telegram import Bot
 
 from KaguraMeaLive import db, app
 from .NotificatonData import NotificationData
-from .schema import Channel, Message
+from .schema import Channel, Message, TwitcastingChannel
+from .twitcasting import TwitCastingMessage
 
 
 class TelegramBot:
     def __init__(self, token):
         self.bot = Bot(token)
+
+    def alert_tc(self, n: TwitCastingMessage):
+        channel = db.session.query(TwitcastingChannel).filter_by(id=n.id).one()
+        text = n.get_message_text()
+        for chat in channel.chats:
+            try:
+                self.bot.send_message(chat.id, text, disable_web_page_preview=True, timeout=1)
+            except Exception as e:
+                app.logger.error(f'when alert tc: {e}')
 
     def alert(self, n: NotificationData):
         channel = db.session.query(Channel).filter_by(id=n.channel_id).one()

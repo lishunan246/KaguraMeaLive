@@ -110,13 +110,15 @@ def tear_down(e=None):
 
 
 from .schema import init_db_command
-from .subscribe import subscribe_command
 
 app.cli.add_command(init_db_command)
-app.cli.add_command(subscribe_command)
 
 from .websub import handle_challenge, handle_message
 from .telegram_bot_webhook import answer_telegram, answer_telegram_get
 
 app.teardown_appcontext(tear_down)
 app.logger.info("service start")
+
+from .background_worker import init_background_jobs
+
+init_background_jobs()

@@ -8,3 +8,4 @@ Flask-SQLAlchemy
 pytest
 python-dateutil
 python-telegram-bot
+apscheduler

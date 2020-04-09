@@ -3,11 +3,12 @@
 import click
 from flask.cli import with_appcontext
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
+from sqlalchemy.sql import func, text
 
-from KaguraMeaLive import app, db
+from KaguraMeaLive import db
 
 default_collation = 'utf8mb4_unicode_ci'
+now_on_update = text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP')
 
 association_table = db.Table(
     'channel_chat',
@@ -16,6 +17,17 @@ association_table = db.Table(
 
     db.Column('channel_id', db.String(50, collation=default_collation), db.ForeignKey('channel.id')),
     db.Column('chat_id', db.String(50, collation=default_collation), db.ForeignKey('chat.id'))
+)
+
+association_tc_table = db.Table(
+    'channel_chat_tc',
+    db.Model.metadata,
+    db.Column('id', db.Integer, primary_key=True),  # Auto-increment should be default
+
+    db.Column('tc_id', db.String(50, collation=default_collation), db.ForeignKey('twitcasting_channel.id')),
+    db.Column('chat_id', db.String(50, collation=default_collation), db.ForeignKey('chat.id')),
+    db.Column('time_created', db.TIMESTAMP(timezone=True), nullable=False, server_default=func.now()),
+    db.Column('time_updated', db.TIMESTAMP(timezone=True), nullable=False, server_default=now_on_update),
 )
 
 
@@ -88,6 +100,18 @@ class TelegramUser(db.Model):
     role = db.Column(db.String(50, collation=default_collation), nullable=False, default="normal user")
     time_created = db.Column(db.TIMESTAMP(timezone=True), nullable=False, server_default=func.now())
     time_updated = db.Column(db.TIMESTAMP(timezone=True), nullable=False, onupdate=func.now())
+
+
+class TwitcastingChannel(db.Model):
+    __table_args__ = {'mysql_charset': 'utf8mb4', 'mysql_collate': default_collation}
+    id = db.Column(db.String(50, collation=default_collation), primary_key=True)
+    name = db.Column(db.String(50, collation=default_collation))
+    is_live = db.Column(db.Boolean, nullable=False, default=False)
+    is_deleted = db.Column(db.Boolean, nullable=False, default=False)
+
+    time_created = db.Column(db.TIMESTAMP(timezone=True), nullable=False, server_default=func.now())
+    time_updated = db.Column(db.TIMESTAMP(timezone=True), nullable=False, server_default=now_on_update)
+    chats = relationship("Chat", secondary=association_tc_table, backref="tc_channels")
 
 
 def init_db():

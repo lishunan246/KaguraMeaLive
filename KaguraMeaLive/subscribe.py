@@ -1,10 +1,8 @@
-# coding:utf-8
+# coding: utf-8
 
-import click
 import requests
-from flask.cli import with_appcontext
 
-from KaguraMeaLive import db,app
+from KaguraMeaLive import db, app
 from .schema import Channel
 
 
@@ -20,16 +18,14 @@ def subscribe(channel: Channel) -> None:
         timeout=5
     )
     if r.status_code == 202:
-        click.echo(f"{channel.name} subscribed.")
+        app.logger.info(f"{channel.name} subscribed.")
     else:
-        click.echo(f"{r.status_code} when subscribing {channel.name}, {r.content}")
+        app.logger.error(f"{r.status_code} when subscribing {channel.name}, {r.content}")
 
 
-@click.command('subscribe')
-@with_appcontext
-def subscribe_command():
+def subscribe_job():
     """subscribe via pubsubhubbub"""
 
     for c in db.session.query(Channel).filter_by(subscribe=True).all():
         subscribe(c)
-    click.echo('Subscribed.')
+    app.logger.info('Subscribed.')
