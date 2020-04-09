@@ -8,6 +8,7 @@ import requests
 
 from KaguraMeaLive import db, app
 from .schema import TwitcastingChannel
+from .telegram_bot import TelegramBot
 from .translate import translate
 
 
@@ -60,7 +61,8 @@ def scan_tc(c: TwitcastingChannel) -> None:
 
         except Exception as e:
             app.logger.error(f'when get title: {e}')
-
+        bot = TelegramBot(app.config['TELEGRAM_BOT_TOKEN'])
+        bot.alert_tc(e)
     c.is_live = is_live_now
     db.session.merge(c)
     db.session.commit()
